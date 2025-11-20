@@ -3,7 +3,6 @@ package net.warze.hspemoji.client.chat;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.text.Text;
 import net.warze.hspemoji.client.HspEmojiClient;
 
@@ -20,28 +19,33 @@ public final class EmojiSuggestionProvider {
     private EmojiSuggestionProvider() {
     }
 
-    public static Suggestions appendEmojiSuggestions(Suggestions base, SuggestionsBuilder builder) {
-        if (builder == null) {
+    public static Suggestions appendEmojiSuggestions(Suggestions base, String input, int cursor) {
+        if (base == null || input == null || input.isEmpty()) {
             return base;
         }
-        String query = builder.getRemaining();
-        if (query == null || query.isBlank()) {
+
+        int clampedCursor = Math.max(0, Math.min(cursor, input.length()));
+        String query = extractCurrentToken(input, clampedCursor);
+        if (query.isEmpty()) {
             return base;
         }
+
         String normalized = query.toLowerCase(Locale.ROOT);
         if (!normalized.startsWith(":")) {
             return base;
         }
+
         Collection<String> emojiKeys = HspEmojiClient.REGISTRY.keys();
         if (emojiKeys.isEmpty()) {
             return base;
         }
+
         StringRange range = base.getRange();
-        if (range.getStart() == range.getEnd() && !query.isEmpty()) {
-            int start = Math.max(0, builder.getInput().length() - query.length());
-            int end = builder.getInput().length();
-            range = StringRange.between(start, end);
+        if (range.getStart() == range.getEnd()) {
+            int start = Math.max(0, clampedCursor - query.length());
+            range = StringRange.between(start, clampedCursor);
         }
+
         List<Suggestion> merged = new ArrayList<>(base.getList());
         int added = 0;
         for (String token : emojiKeys) {
@@ -62,5 +66,21 @@ public final class EmojiSuggestionProvider {
             dedup.putIfAbsent(suggestion.getText(), suggestion);
         }
         return new Suggestions(range, new ArrayList<>(dedup.values()));
+    }
+
+    private static String extractCurrentToken(String input, int cursor) {
+        if (input.isEmpty()) {
+            return "";
+        }
+        int end = Math.max(0, Math.min(cursor, input.length()));
+        int start = end;
+        while (start > 0) {
+            char ch = input.charAt(start - 1);
+            if (Character.isWhitespace(ch)) {
+                break;
+            }
+            start--;
+        }
+        return input.substring(start, end);
     }
 }

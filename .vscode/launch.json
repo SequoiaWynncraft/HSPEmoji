@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Minecraft Client (Gradle)",
+      "type": "java",
+      "request": "launch",
+      "mainClass": "org.gradle.wrapper.GradleWrapperMain",
+      "classPaths": [
+        "${workspaceFolder}/gradle/wrapper/gradle-wrapper.jar"
+      ],
+      "args": [
+        "runClient"
+      ],
+      "vmArgs": "-Dorg.gradle.appname=gradlew",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal"
+    }
+  ]
+}

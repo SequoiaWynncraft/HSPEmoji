@@ -19,7 +19,8 @@ classes/
 # vscode
 
 .settings/
-.vscode/
+.vscode/*
+!.vscode/launch.json
 bin/
 .classpath
 .project
@@ -38,3 +39,7 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
+
+
+# mc sources
+net/*
