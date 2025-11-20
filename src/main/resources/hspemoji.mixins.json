@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "net.warze.hspemoji.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ChatHudLineVisibleMixin"
+  ],
+  "client": [
+    "ChatHudMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
