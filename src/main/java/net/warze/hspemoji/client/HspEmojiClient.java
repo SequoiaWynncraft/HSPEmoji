@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.resource.ResourceType;
 import net.warze.hspemoji.client.remote.RemoteEmojiPackInstaller;
+import net.warze.hspemoji.client.remote.RemoteModInstaller;
 import net.warze.hspemoji.client.resource.EmojiReloadListener;
 import net.warze.hspemoji.client.sound.EmojiSoundBridge;
 import net.warze.hspemoji.client.emoji.EmojiRegistry;
@@ -21,6 +22,7 @@ public final class HspEmojiClient implements ClientModInitializer {
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new EmojiReloadListener(REGISTRY));
         EmojiSoundBridge.INSTANCE.warm();
         RemoteEmojiPackInstaller.schedule();
+        RemoteModInstaller.schedule();
         if (!FabricLoader.getInstance().isModLoaded("wynntils")) {
             LOGGER.warn("Wynntils is required for HSPEmoji to run correctly");
         }

@@ -1,5 +1,6 @@
 package net.warze.hspemoji.client.chat;
 
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.warze.hspemoji.client.HspEmojiClient;
@@ -7,6 +8,7 @@ import net.warze.hspemoji.client.emoji.EmojiSprite;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,6 +26,37 @@ public final class EmojiTokenizer {
             return Optional.empty();
         }, Style.EMPTY);
         return new EmojiMessage(segments);
+    }
+
+    public EmojiMessage tokenize(OrderedText orderedText) {
+        if (orderedText == null) {
+            return EmojiMessage.empty();
+        }
+        List<EmojiSegment> segments = new ArrayList<>();
+        StringBuilder buffer = new StringBuilder();
+        Style[] currentStyle = new Style[] { Style.EMPTY };
+        orderedText.accept((index, style, codePoint) -> {
+            Style resolved = style == null ? Style.EMPTY : style;
+            if (!Objects.equals(resolved, currentStyle[0])) {
+                hspemoji$flushBuffer(buffer, currentStyle[0], segments);
+                currentStyle[0] = resolved;
+            }
+            buffer.appendCodePoint(codePoint);
+            return true;
+        });
+        hspemoji$flushBuffer(buffer, currentStyle[0], segments);
+        if (segments.isEmpty()) {
+            return EmojiMessage.empty();
+        }
+        return new EmojiMessage(segments);
+    }
+
+    private void hspemoji$flushBuffer(StringBuilder buffer, Style style, List<EmojiSegment> segments) {
+        if (buffer.isEmpty()) {
+            return;
+        }
+        parseChunk(buffer.toString(), style == null ? Style.EMPTY : style, segments);
+        buffer.setLength(0);
     }
 
     private void parseChunk(String chunk, Style style, List<EmojiSegment> segments) {

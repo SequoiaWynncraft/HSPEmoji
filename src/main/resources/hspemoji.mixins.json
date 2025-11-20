@@ -6,7 +6,8 @@
     "ChatHudLineVisibleMixin"
   ],
   "client": [
-    "ChatHudMixin"
+    "ChatHudMixin",
+    "ChatInputSuggestorMixin"
   ],
   "injectors": {
     "defaultRequire": 1
